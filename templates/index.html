@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Task Vault</title>
+
+  <!-- Fonts -->
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}" />
+  <!-- CSS -->
+</head>
+<body>
+
+<div class="app">
+
+  <!-- Header -->
+  <header>
+    <h1>Task Vault</h1>
+  </header>
+
+  <!-- Stats -->
+  <div class="stats" id="statsBar">
+    <div class="stat"><span class="stat-num" id="s-total">0</span><span class="stat-label">Total</span></div>
+    <div class="stat"><span class="stat-num" id="s-todo">0</span><span class="stat-label">To Do</span></div>
+    <div class="stat"><span class="stat-num" id="s-prog">0</span><span class="stat-label">In Progress</span></div>
+    <div class="stat"><span class="stat-num" id="s-done">0</span><span class="stat-label">Done</span></div>
+  </div>
+
+  <!-- Controls -->
+  <div class="controls">
+    <div class="search-wrap">
+      <span class="search-icon">
+        <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+          <circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/>
+        </svg>
+      </span>
+      <input type="text" id="searchInput" placeholder="    search" oninput="loadTasks()" />
+    </div>
+
+    <select id="statusFilter" onchange="loadTasks()">
+      <option value="">All Statuses</option>
+      <option value="todo">To Do</option>
+      <option value="in_progress">In Progress</option>
+      <option value="done">Done</option>
+    </select>
+
+    <select id="priorityFilter" onchange="loadTasks()">
+      <option value="">All Priorities</option>
+      <option value="low">Low</option>
+      <option value="medium">Medium</option>
+      <option value="high">High</option>
+    </select>
+
+    <button class="btn btn-primary" onclick="openModal()">+ New Task</button>
+  </div>
+
+  <!-- Task List -->
+  <div class="task-list" id="taskList"></div>
+
+</div>
+
+<!-- Modal -->
+<div class="overlay" id="overlay" onclick="handleOverlayClick(event)">
+  <div class="modal">
+    <div class="modal-header">
+      <span class="modal-title" id="modalTitle">New Task</span>
+      <button class="close-btn" onclick="closeModal()">×</button>
+    </div>
+
+    <input type="hidden" id="taskId" />
+
+    <div class="form-group">
+      <label>Title *</label>
+      <input type="text" id="titleInput" />
+    </div>
+
+    <div class="form-group">
+      <label>Description</label>
+      <textarea id="descInput"></textarea>
+    </div>
+
+    <div class="form-row">
+      <div class="form-group">
+        <label>Status</label>
+        <select id="statusInput" class="full">
+          <option value="todo">To Do</option>
+          <option value="in_progress">In Progress</option>
+          <option value="done">Done</option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label>Priority</label>
+        <select id="priorityInput" class="full">
+          <option value="low">Low</option>
+          <option value="medium">Medium</option>
+          <option value="high">High</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="closeModal()">Cancel</button>
+      <button class="btn btn-primary" onclick="saveTask()">Save Task</button>
+    </div>
+  </div>
+</div>
+
+<!-- JS -->
+ <script src="{{ url_for('static', filename='script.js') }}"></script>
+</body>
+</html>
