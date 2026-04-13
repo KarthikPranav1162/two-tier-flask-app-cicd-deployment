@@ -6,7 +6,7 @@ pipeline {
         stage('Clone') {
             steps {
                 echo 'Cloning repository...'
-                git 'https://github.com/KarthikPranav1162/two-tier-flask-app-cicd-deployment.git'
+                git branch: 'main', url: 'https://github.com/KarthikPranav1162/two-tier-flask-app-cicd-deployment.git'
             }
         }
 
@@ -19,8 +19,12 @@ pipeline {
 
         stage('Run Container') {
             steps {
-                echo 'Running container...'
-                sh 'docker run -d -p 5000:5000 flask-app'
+                echo 'Stopping old container...'
+                sh 'docker stop flask-container || true'
+                sh 'docker rm flask-container || true'
+
+                echo 'Running new container...'
+                sh 'docker run -d -p 5000:5000 --name flask-container flask-app'
             }
         }
     }
