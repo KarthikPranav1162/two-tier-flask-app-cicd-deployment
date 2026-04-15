@@ -1,30 +1,36 @@
 pipeline {
     agent any
 
-    stages {
+    environment {
+        DB_HOST = 'taskvault-db.cwjcioaa0cfn.us-east-1.rds.amazonaws.com'
+        DB_USER = 'admin'
+        DB_NAME = 'taskmanager'
+        DB_PASSWORD = credentials('db-password')
+    }
 
-        stage('Clone') {
-            steps {
-                echo 'Cloning repository...'
-                git branch: 'main', url: 'https://github.com/KarthikPranav1162/two-tier-flask-app-cicd-deployment.git'
-            }
-        }
+    stages {
 
         stage('Build Docker Image') {
             steps {
-                echo 'Building Docker image...'
-                sh 'docker build -t flask-app .'
+                sh 'docker build -t flask-app:latest .'
             }
         }
 
         stage('Run Container') {
             steps {
-                echo 'Stopping old container...'
-                sh 'docker stop flask-container || true'
-                sh 'docker rm flask-container || true'
+                sh '''
+                docker stop flask-container || true
+                docker rm flask-container || true
 
-                echo 'Running new container...'
-                sh 'docker run -d -p 5000:5000 --name flask-container flask-app'
+                docker run -d -p 5000:5000 \
+                  --name flask-container \
+                  --restart always \
+                  -e DB_HOST=$DB_HOST \
+                  -e DB_USER=$DB_USER \
+                  -e DB_PASSWORD=$DB_PASSWORD \
+                  -e DB_NAME=$DB_NAME \
+                  flask-app:latest
+                '''
             }
         }
     }
