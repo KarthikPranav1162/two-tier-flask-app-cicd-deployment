@@ -19,12 +19,24 @@ pipeline {
             }
         }
 
-        stage('Build Image') {
-            steps {
-                sh "docker build -t $IMAGE_NAME:$IMAGE_TAG ."
-            }
-        }
+      stage('Push to DockerHub') {
+    steps {
+        withCredentials([usernamePassword(
+            credentialsId: 'dockerhub-creds',
+            usernameVariable: 'DOCKER_USER',
+            passwordVariable: 'DOCKER_PASS'
+        )]) {
+            sh '''
+            echo "$DOCKER_PASS" | docker login -u "$DOCKER_USER" --password-stdin
 
+            docker push $IMAGE_NAME:$IMAGE_TAG
+            docker push $IMAGE_NAME:latest
+
+            docker logout
+            '''
+        }
+    }
+}
         stage('Push to DockerHub') {
             steps {
                 withCredentials([usernamePassword(
@@ -34,7 +46,11 @@ pipeline {
                 )]) {
                     sh '''
                     echo "$DOCKER_PASS" | docker login -u "$DOCKER_USER" --password-stdin
+
                     docker push $IMAGE_NAME:$IMAGE_TAG
+                    docker push $IMAGE_NAME:latest
+
+                    docker logout
                     '''
                 }
             }
@@ -60,10 +76,18 @@ pipeline {
             }
         }
 
+        stage('Cleanup Old Images') {
+            steps {
+                sh 'docker image prune -af || true'
+            }
+        }
+
         stage('Verify') {
             steps {
-                sh 'sleep 5'
-                sh 'curl -f http://localhost:5000 || exit 1'
+                sh '''
+                sleep 5
+                curl -f http://localhost:5000 || exit 1
+                '''
             }
         }
     }
