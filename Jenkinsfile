@@ -2,6 +2,9 @@ pipeline {
     agent any
 
     environment {
+        IMAGE_NAME = "karthikpranav/taskvault-app"
+        IMAGE_TAG = "${BUILD_NUMBER}"
+
         DB_HOST = 'taskvault-db.cwjcioaa0cfn.us-east-1.rds.amazonaws.com'
         DB_USER = 'admin'
         DB_NAME = 'taskmanager'
@@ -10,15 +13,38 @@ pipeline {
 
     stages {
 
-        stage('Build Docker Image') {
+        stage('Checkout Code') {
             steps {
-                sh 'docker build -t flask-app:latest .'
+                checkout scm
             }
         }
 
-        stage('Run Container') {
+        stage('Build Image') {
+            steps {
+                sh "docker build -t $IMAGE_NAME:$IMAGE_TAG ."
+            }
+        }
+
+        stage('Push to DockerHub') {
+            steps {
+                withCredentials([usernamePassword(
+                    credentialsId: 'dockerhub-creds',
+                    usernameVariable: 'DOCKER_USER',
+                    passwordVariable: 'DOCKER_PASS'
+                )]) {
+                    sh '''
+                    echo "$DOCKER_PASS" | docker login -u "$DOCKER_USER" --password-stdin
+                    docker push $IMAGE_NAME:$IMAGE_TAG
+                    '''
+                }
+            }
+        }
+
+        stage('Deploy') {
             steps {
                 sh '''
+                docker pull $IMAGE_NAME:$IMAGE_TAG
+
                 docker stop flask-container || true
                 docker rm flask-container || true
 
@@ -29,8 +55,15 @@ pipeline {
                   -e DB_USER=$DB_USER \
                   -e DB_PASSWORD=$DB_PASSWORD \
                   -e DB_NAME=$DB_NAME \
-                  flask-app:latest
+                  $IMAGE_NAME:$IMAGE_TAG
                 '''
+            }
+        }
+
+        stage('Verify') {
+            steps {
+                sh 'sleep 5'
+                sh 'curl -f http://localhost:5000 || exit 1'
             }
         }
     }
