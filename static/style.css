@@ -1,3 +1,4 @@
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap');
 
     /* ── Reset & Variables ──────────────────────────────────────── */
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -6,7 +7,7 @@
       --bg:        #ffffff;
       --surface:   #ffffff;
       --border:    #e5e3de;
-      --text:      #1a1916;
+      --text:      #2c3A47;
       --muted:     #8a8780;
       --accent:    #1a1916;
 
@@ -48,7 +49,7 @@
       color: var(--muted);
       margin-bottom: 6px;
     }
-    h1 { font-size: 2.1rem; font-weight: 600; letter-spacing: -.03em; }
+    h1 { font-size: 2.1rem; font-weight: 600; letter-spacing: -.03em; font-family: 'Poppins', sans-serif;}
 
     /* ── Stats bar ───────────────────────────────────────────────── */
     .stats {
