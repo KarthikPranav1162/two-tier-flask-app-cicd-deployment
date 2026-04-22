@@ -55,7 +55,7 @@ pipeline {
                 docker stop flask-container || true
                 docker rm flask-container || true
 
-                docker run -d -p 5000:5000 \
+                docker run -d -p 127.0.0.1:5000:5000 \
                   --name flask-container \
                   --restart always \
                   -e DB_HOST=$DB_HOST \
@@ -77,7 +77,7 @@ pipeline {
             steps {
                 sh '''
                 sleep 5
-                curl -f http://localhost:5000 || exit 1
+                curl -f http://localhost || exit 1
                 '''
             }
         }
