@@ -67,4 +67,4 @@ Technologies used to build, deploy, and automate the application:
 
 ## Live Demo
 
-http://54.226.198.123/
+http://13.126.80.128/
