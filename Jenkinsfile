@@ -5,7 +5,7 @@ pipeline {
         IMAGE_NAME = "karthikpranav/taskvault-app"
         IMAGE_TAG = "${BUILD_NUMBER}"
 
-        DB_HOST = 'taskvault-db.cwjcioaa0cfn.us-east-1.rds.amazonaws.com'
+        DB_HOST = 'taskvault-db.c182ci0emp1a.ap-south-1.rds.amazonaws.com'
         DB_USER = 'admin'
         DB_NAME = 'taskmanager'
         DB_PASSWORD = credentials('db-password')
